@@ -10,42 +10,38 @@ export class PostgresqlTaskRepository implements TaskRepositoryInterface {
   public async save(task: Task) {
     const [row] = await this.database
       .insert(tasks)
-      .values({
-        id: task.id,
-        title: task.title,
-        done: task.isDone,
-      })
-      .onConflictDoUpdate({
-        target: tasks.id,
-        set: {
-          title: sql.raw(`excluded.${tasks.title.name}`),
-          done: sql.raw(`excluded.${tasks.done.name}`),
-        },
-      })
+      .values(task)
+      .onConflictDoUpdate(
+        (() => {
+          const { id, ...rest } = tasks;
+
+          return {
+            target: tasks.id,
+            set: Object.fromEntries(
+              Object.entries(rest).map(([key]) => [
+                key,
+                sql.raw(`excluded.${key}`),
+              ]),
+            ),
+          };
+        })(),
+      )
       .returning({
         id: tasks.id,
         title: tasks.title,
-        done: tasks.done,
+        isDone: tasks.isDone,
       });
 
     if (!row) {
       throw new Error("Failed to save a task");
     }
 
-    return new Task({
-      id: row.id,
-      title: row.title,
-      done: row.done,
-    });
+    return new Task(row);
   }
 
   public async findById(id: string) {
     const [row] = await this.database
-      .select({
-        id: tasks.id,
-        title: tasks.title,
-        done: tasks.done,
-      })
+      .select()
       .from(tasks)
       .where(eq(tasks.id, id));
 
@@ -53,10 +49,6 @@ export class PostgresqlTaskRepository implements TaskRepositoryInterface {
       return undefined;
     }
 
-    return new Task({
-      id: row.id,
-      title: row.title,
-      done: row.done,
-    });
+    return new Task(row);
   }
 }

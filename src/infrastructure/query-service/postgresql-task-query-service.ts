@@ -14,11 +14,7 @@ export class PostgresqlTaskQueryService implements TaskQueryServiceInterface {
     input: TaskQueryServiceInput,
   ): Promise<TaskQueryServicePayload | undefined> {
     const [row] = await this.database
-      .select({
-        id: tasks.id,
-        title: tasks.title,
-        done: tasks.done,
-      })
+      .select()
       .from(tasks)
       .where(eq(tasks.id, input.id));
 

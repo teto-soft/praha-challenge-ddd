@@ -7,7 +7,7 @@ export type SetTaskDoneUseCaseInput = {
 export type SetTaskDoneUseCasePayload = {
   id: string;
   title: string;
-  done: boolean;
+  isDone: boolean;
 };
 
 export class SetTaskDoneUseCaseNotFoundError extends Error {
@@ -33,12 +33,6 @@ export class SetTaskDoneUseCase {
 
     task.makeAsDone();
 
-    const savedTask = await this.taskRepository.save(task);
-
-    return {
-      id: savedTask.id,
-      title: savedTask.title,
-      done: savedTask.isDone,
-    };
+    return await this.taskRepository.save(task);
   }
 }

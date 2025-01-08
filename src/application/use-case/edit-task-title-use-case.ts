@@ -8,7 +8,7 @@ export type EditTaskTitleUseCaseInput = {
 export type EditTaskTitleUseCasePayload = {
   id: string;
   title: string;
-  done: boolean;
+  isDone: boolean;
 };
 
 export class EditTaskTitleUseCaseNotFoundError extends Error {
@@ -34,12 +34,6 @@ export class EditTaskTitleUseCase {
 
     task.edit(input.title);
 
-    const savedTask = await this.taskRepository.save(task);
-
-    return {
-      id: savedTask.id,
-      title: savedTask.title,
-      done: savedTask.isDone,
-    };
+    return await this.taskRepository.save(task);
   }
 }

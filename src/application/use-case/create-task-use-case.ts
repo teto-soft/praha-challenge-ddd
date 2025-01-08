@@ -8,7 +8,7 @@ export type CreateTaskUseCaseInput = {
 export type CreateTaskUseCasePayload = {
   id: string;
   title: string;
-  done: boolean;
+  isDone: boolean;
 };
 
 export class CreateTaskUseCase {
@@ -21,12 +21,6 @@ export class CreateTaskUseCase {
   ): Promise<CreateTaskUseCasePayload> {
     const task = new Task(input);
 
-    const savedTask = await this.taskRepository.save(task);
-
-    return {
-      id: savedTask.id,
-      title: savedTask.title,
-      done: savedTask.isDone,
-    };
+    return await this.taskRepository.save(task);
   }
 }
