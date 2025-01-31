@@ -1,4 +1,6 @@
+import { Task } from "../../domain/task/task";
 import type { TaskRepositoryInterface } from "../../domain/task/task-repository";
+import { createIsDone } from "../../domain/value-objects/isDone";
 
 export type SetTaskDoneUseCaseInput = {
   taskId: string;
@@ -31,8 +33,11 @@ export class SetTaskDoneUseCase {
       throw new SetTaskDoneUseCaseNotFoundError();
     }
 
-    task.makeAsDone();
+    const doneTask = Task.reconstruct({
+      ...task,
+      isDone: createIsDone(true),
+    });
 
-    return await this.taskRepository.save(task);
+    return await this.taskRepository.save(doneTask);
   }
 }

@@ -1,3 +1,4 @@
+import { Task } from "../../domain/task/task";
 import type { TaskRepositoryInterface } from "../../domain/task/task-repository";
 
 export type EditTaskTitleUseCaseInput = {
@@ -32,8 +33,11 @@ export class EditTaskTitleUseCase {
       throw new EditTaskTitleUseCaseNotFoundError();
     }
 
-    task.edit(input.title);
+    const editedTask = Task.reconstruct({
+      ...task,
+      title: input.title,
+    });
 
-    return await this.taskRepository.save(task);
+    return await this.taskRepository.save(editedTask);
   }
 }
