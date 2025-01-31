@@ -1,6 +1,6 @@
-import { describe, expect, it } from "vitest";
-import { createId, InvalidIdError } from "./id";
 import { ulid } from "ulid";
+import { describe, expect, it } from "vitest";
+import { InvalidIdError, createId } from "./id";
 
 describe("createId", () => {
   it("generates valid ULID", () => {
@@ -29,13 +29,13 @@ describe("createId", () => {
       "01ARZ3NDEKTSV4RRFFQ69G5FAVA", // Too long
     ];
 
-    cases.forEach((invalidId) => {
+    for (const invalidId of cases) {
       const result = createId(invalidId);
       expect(result.isErr()).toBe(true);
       result.mapErr((error) => {
         expect(error).toBeInstanceOf(InvalidIdError);
         expect(error.message).toBe(`Invalid id: ${invalidId}`);
       });
-    });
+    }
   });
 });

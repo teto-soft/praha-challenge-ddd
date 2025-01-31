@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createIsDone, IsDone } from "./isDone";
+import { type IsDone, createIsDone } from "./isDone";
 
 function assertType<T>(_value: T) {
   return true;

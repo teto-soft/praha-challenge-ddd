@@ -1,6 +1,6 @@
+import { ulid } from "ulid";
 import { describe, expect, it } from "vitest";
 import { Task } from "./task";
-import { ulid } from "ulid";
 
 describe("Task", () => {
   describe("create", () => {

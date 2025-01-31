@@ -1,4 +1,4 @@
-import { err, ok, Result } from "neverthrow";
+import { type Result, err, ok } from "neverthrow";
 import { ulid } from "ulid";
 import { z } from "zod";
 
@@ -26,7 +26,7 @@ const ulidSchema = z
   .length(26)
   .regex(/^[0123456789ABCDEFGHJKMNPQRSTVWXYZ]{26}$/i)
   .refine((value) => {
-    const timestamp = parseInt(value.substring(0, 10), 32);
+    const timestamp = Number.parseInt(value.substring(0, 10), 32);
     return !isNaN(timestamp);
   }, "Invalid ULID timestamp")
   .transform((value): Id => value as Id);

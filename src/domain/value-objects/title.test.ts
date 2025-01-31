@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createTitle, InvalidTitleError } from "./title";
+import { InvalidTitleError, createTitle } from "./title";
 
 describe("createTitle", () => {
   it("accepts valid title", () => {
@@ -20,13 +20,13 @@ describe("createTitle", () => {
       },
     ];
 
-    cases.forEach(({ input, description }) => {
+    for (const { input, description } of cases) {
       const result = createTitle(input);
       expect(result.isErr(), `Should reject ${description}`).toBe(true);
 
       result.mapErr((error) => {
         expect(error).toBeInstanceOf(InvalidTitleError);
       });
-    });
+    }
   });
 });

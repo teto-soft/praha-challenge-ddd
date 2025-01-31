@@ -1,4 +1,4 @@
-import { err, ok, Result } from "neverthrow";
+import { type Result, err, ok } from "neverthrow";
 import { z } from "zod";
 
 export type Title = string & { readonly __brand: unique symbol };

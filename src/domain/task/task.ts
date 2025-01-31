@@ -1,7 +1,11 @@
-import { Result } from "neverthrow";
-import { createTitle, InvalidTitleError, Title } from "../value-objects/title";
-import { createId, Id, InvalidIdError } from "../value-objects/id";
-import { createIsDone, IsDone } from "../value-objects/isDone";
+import type { Result } from "neverthrow";
+import { type Id, type InvalidIdError, createId } from "../value-objects/id";
+import { type IsDone, createIsDone } from "../value-objects/isDone";
+import {
+  type InvalidTitleError,
+  type Title,
+  createTitle,
+} from "../value-objects/title";
 
 type ITask = Readonly<{
   id: Id;
