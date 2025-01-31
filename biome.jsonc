@@ -10,6 +10,10 @@
       "complexity": {
         // typescriptのnoPropertyAccessFromIndexSignatureを優先
         "useLiteralKeys": "off"
+      },
+      "suspicious": {
+        // TS では Number.isNan より global isNaN のほうが安全なので無効化
+        "noGlobalIsNan": "off"
       }
     }
   },
