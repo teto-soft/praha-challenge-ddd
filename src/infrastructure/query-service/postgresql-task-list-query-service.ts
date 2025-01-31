@@ -15,7 +15,7 @@ export class PostgresqlTaskListQueryService
       .select({
         id: tasks.id,
         title: tasks.title,
-        done: tasks.done,
+        isDone: tasks.isDone,
       })
       .from(tasks);
   }

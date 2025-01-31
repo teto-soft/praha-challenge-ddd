@@ -7,7 +7,7 @@ import {
   createTitle,
 } from "../value-objects/title";
 
-type ITask = Readonly<{
+export type ITask = Readonly<{
   id: Id;
   title: Title;
   isDone: IsDone;
@@ -24,7 +24,7 @@ type ReconstructTaskProps = Readonly<{
   isDone: boolean;
 }>;
 
-type TaskError = InvalidIdError | InvalidTitleError;
+export type TaskError = InvalidIdError | InvalidTitleError;
 
 export const Task = {
   create: (props: CreateTaskProps): Result<ITask, TaskError> => {

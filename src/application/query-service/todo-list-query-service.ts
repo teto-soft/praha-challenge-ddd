@@ -1,7 +1,7 @@
 export type TodoListQueryServicePayload = Array<{
   id: string;
   title: string;
-  done: boolean;
+  isDone: boolean;
 }>;
 
 export interface TodoListQueryServiceInterface {

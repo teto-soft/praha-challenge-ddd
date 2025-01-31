@@ -1,6 +1,7 @@
-import type { Task } from "./task";
+import type { Result } from "neverthrow";
+import type { ITask, TaskError } from "./task";
 
 export type TaskRepositoryInterface = {
-  save: (task: Task) => Promise<Task>;
-  findById(id: string): Promise<Task | undefined>;
+  save: (task: ITask) => Promise<ITask>;
+  findById(id: string): Promise<Result<ITask, TaskError> | undefined>;
 };

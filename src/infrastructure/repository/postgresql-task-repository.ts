@@ -1,5 +1,5 @@
 import { eq, sql } from "drizzle-orm";
-import { Task } from "../../domain/task/task";
+import { type ITask, Task } from "../../domain/task/task";
 import type { TaskRepositoryInterface } from "../../domain/task/task-repository";
 import type { Database } from "../../libs/drizzle/get-database";
 import { tasks } from "../../libs/drizzle/schema";
@@ -7,7 +7,7 @@ import { tasks } from "../../libs/drizzle/schema";
 export class PostgresqlTaskRepository implements TaskRepositoryInterface {
   public constructor(private readonly database: Database) {}
 
-  public async save(task: Task) {
+  public async save(task: ITask) {
     const [row] = await this.database
       .insert(tasks)
       .values(task)
@@ -36,7 +36,7 @@ export class PostgresqlTaskRepository implements TaskRepositoryInterface {
       throw new Error("Failed to save a task");
     }
 
-    return new Task(row);
+    return task;
   }
 
   public async findById(id: string) {
@@ -49,6 +49,6 @@ export class PostgresqlTaskRepository implements TaskRepositoryInterface {
       return undefined;
     }
 
-    return new Task(row);
+    return Task.reconstruct(row);
   }
 }

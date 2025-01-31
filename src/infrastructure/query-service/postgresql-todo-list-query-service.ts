@@ -16,9 +16,9 @@ export class PostgresqlTodoListQueryService
       .select({
         id: tasks.id,
         title: tasks.title,
-        done: tasks.done,
+        isDone: tasks.isDone,
       })
       .from(tasks)
-      .where(eq(tasks.done, false));
+      .where(eq(tasks.isDone, false));
   }
 }
