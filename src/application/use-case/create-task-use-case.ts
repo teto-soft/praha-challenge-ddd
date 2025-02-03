@@ -1,4 +1,5 @@
-import { Task } from "../../domain/task/task";
+import type { Result } from "neverthrow";
+import { Task, type TaskError } from "../../domain/task/task";
 import type { TaskRepositoryInterface } from "../../domain/task/task-repository";
 
 export type CreateTaskUseCaseInput = {
@@ -18,9 +19,16 @@ export class CreateTaskUseCase {
 
   public async invoke(
     input: CreateTaskUseCaseInput,
-  ): Promise<CreateTaskUseCasePayload> {
-    const task = new Task(input);
+  ): Promise<Result<CreateTaskUseCasePayload, TaskError>> {
+    const taskResult = Task.create({
+      title: input.title,
+      isDone: false,
+    });
 
-    return await this.taskRepository.save(task);
+    if (taskResult.isErr()) {
+      return taskResult;
+    }
+
+    return await this.taskRepository.save(taskResult.value);
   }
 }

@@ -1,3 +1,4 @@
+import { type Result, err, ok } from "neverthrow";
 import { Task } from "../../domain/task/task";
 import type { TaskRepositoryInterface } from "../../domain/task/task-repository";
 
@@ -13,10 +14,9 @@ export type EditTaskTitleUseCasePayload = {
 };
 
 export class EditTaskTitleUseCaseNotFoundError extends Error {
-  public override readonly name = "EditTaskTitleUseCaseNotFoundError";
-
-  public constructor() {
-    super("task not found");
+  public constructor(message: string) {
+    super(message);
+    this.name = "EditTaskTitleUseCaseNotFoundError";
   }
 }
 
@@ -27,17 +27,32 @@ export class EditTaskTitleUseCase {
 
   public async invoke(
     input: EditTaskTitleUseCaseInput,
-  ): Promise<EditTaskTitleUseCasePayload> {
-    const task = await this.taskRepository.findById(input.taskId);
-    if (!task) {
-      throw new EditTaskTitleUseCaseNotFoundError();
+  ): Promise<
+    Result<
+      EditTaskTitleUseCasePayload | undefined,
+      EditTaskTitleUseCaseNotFoundError
+    >
+  > {
+    const foundTaskResult = await this.taskRepository.findById(input.taskId);
+    if (foundTaskResult.isErr()) {
+      return err(
+        new EditTaskTitleUseCaseNotFoundError(foundTaskResult.error.message),
+      );
     }
 
-    const editedTask = Task.reconstruct({
-      ...task,
+    if (typeof foundTaskResult.value === "undefined") {
+      return ok(foundTaskResult.value);
+    }
+
+    const editedTaskResult = Task.reconstruct({
+      ...foundTaskResult.value,
       title: input.title,
     });
 
-    return await this.taskRepository.save(editedTask);
+    if (editedTaskResult.isErr()) {
+      return editedTaskResult;
+    }
+
+    return await this.taskRepository.save(editedTaskResult.value);
   }
 }
