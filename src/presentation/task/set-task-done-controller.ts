@@ -1,13 +1,10 @@
-import { zValidator } from "@hono/zod-validator";
-import { Hono } from "hono";
-import { createMiddleware } from "hono/factory";
-import { z } from "zod";
-import {
-  SetTaskDoneUseCase,
-  SetTaskDoneUseCaseNotFoundError,
-} from "../../application/use-case/set-task-done-use-case";
-import { PostgresqlTaskRepository } from "../../infrastructure/repository/postgresql-task-repository";
-import { getDatabase } from "../../libs/drizzle/get-database";
+import {zValidator} from "@hono/zod-validator";
+import {Hono} from "hono";
+import {createMiddleware} from "hono/factory";
+import {z} from "zod";
+import {SetTaskDoneUseCase, SetTaskDoneUseCaseNotFoundError,} from "../../application/use-case/set-task-done-use-case";
+import {createPostgresqlTaskRepository,} from "../../infrastructure/repository/postgresql-task-repository";
+import {getDatabase} from "../../libs/drizzle/get-database";
 
 type Env = {
   Variables: {
@@ -28,7 +25,7 @@ setTaskDoneController.post(
   }),
   createMiddleware<Env>(async (context, next) => {
     const database = getDatabase();
-    const taskRepository = new PostgresqlTaskRepository(database);
+    const taskRepository = createPostgresqlTaskRepository(database);
     const setTaskDoneUseCase = new SetTaskDoneUseCase(taskRepository);
     context.set("setTaskDoneUseCase", setTaskDoneUseCase);
 

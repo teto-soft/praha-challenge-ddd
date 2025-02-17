@@ -1,13 +1,13 @@
-import { zValidator } from "@hono/zod-validator";
-import { Hono } from "hono";
-import { createMiddleware } from "hono/factory";
-import { z } from "zod";
+import {zValidator} from "@hono/zod-validator";
+import {Hono} from "hono";
+import {createMiddleware} from "hono/factory";
+import {z} from "zod";
 import {
   EditTaskTitleUseCase,
   EditTaskTitleUseCaseNotFoundError,
 } from "../../application/use-case/edit-task-title-use-case";
-import { PostgresqlTaskRepository } from "../../infrastructure/repository/postgresql-task-repository";
-import { getDatabase } from "../../libs/drizzle/get-database";
+import {createPostgresqlTaskRepository} from "../../infrastructure/repository/postgresql-task-repository";
+import {getDatabase} from "../../libs/drizzle/get-database";
 
 type Env = {
   Variables: {
@@ -35,7 +35,7 @@ editTaskTitleController.post(
   }),
   createMiddleware<Env>(async (context, next) => {
     const database = getDatabase();
-    const taskRepository = new PostgresqlTaskRepository(database);
+    const taskRepository = createPostgresqlTaskRepository(database);
     const editTaskTitleUseCase = new EditTaskTitleUseCase(taskRepository);
     context.set("editTaskTitleUseCase", editTaskTitleUseCase);
 

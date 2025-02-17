@@ -4,8 +4,11 @@ import type { ITask } from "./task";
 export type TaskRepositoryInterface = {
   save: (task: ITask) => Promise<Result<ITask, TaskRepositorySaveError>>;
   findById(
-    id: string,
-  ): Promise<Result<ITask | undefined, TaskRepositoryNotFoundError>>;
+    id: ITask["id"],
+  ): Promise<Result<ITask | undefined, TaskRepositoryFindByIdError>>;
+  findManyBy(
+    _: Partial<Omit<ITask, "id">>,
+  ): Promise<Result<ITask[], TaskRepositoryFindManyByError>>;
 };
 
 export class TaskRepositoryError extends Error {
@@ -15,10 +18,10 @@ export class TaskRepositoryError extends Error {
   }
 }
 
-export class TaskRepositoryNotFoundError extends TaskRepositoryError {
+export class TaskRepositoryFindByIdError extends TaskRepositoryError {
   constructor(message: string) {
     super(message);
-    this.name = "TaskRepositoryNotFoundError";
+    this.name = "TaskRepositoryFindByIdError";
   }
 }
 
@@ -26,5 +29,12 @@ export class TaskRepositorySaveError extends TaskRepositoryError {
   constructor(message: string) {
     super(message);
     this.name = "TaskRepositorySaveError";
+  }
+}
+
+export class TaskRepositoryFindManyByError extends TaskRepositoryError {
+  constructor(message: string) {
+    super(message);
+    this.name = "TaskRepositoryFindManyByError";
   }
 }
