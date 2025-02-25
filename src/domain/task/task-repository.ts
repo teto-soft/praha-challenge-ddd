@@ -1,13 +1,13 @@
-import type { Result } from "neverthrow";
-import type { ITask } from "./task";
+import type {Result} from "neverthrow";
+import type {ITask} from "./task";
 
 export type TaskRepositoryInterface = {
   save: (task: ITask) => Promise<Result<ITask, TaskRepositorySaveError>>;
   findById(
     id: ITask["id"],
-  ): Promise<Result<ITask | undefined, TaskRepositoryFindByIdError>>;
+  ): Promise<Result<ITask, TaskRepositoryFindByIdError>>;
   findManyBy(
-    _: Partial<Omit<ITask, "id">>,
+    _?: Partial<Omit<ITask, "id">>,
   ): Promise<Result<ITask[], TaskRepositoryFindManyByError>>;
 };
 

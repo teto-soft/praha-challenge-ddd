@@ -1,14 +1,14 @@
-import { zValidator } from "@hono/zod-validator";
-import { Hono } from "hono";
-import { createMiddleware } from "hono/factory";
-import { z } from "zod";
-import type { TaskQueryServiceInterface } from "../../application/query-service/task-query-service";
-import { PostgresqlTaskQueryService } from "../../infrastructure/query-service/postgresql-task-query-service";
-import { getDatabase } from "../../libs/drizzle/get-database";
+import {zValidator} from "@hono/zod-validator";
+import {Hono} from "hono";
+import {createMiddleware} from "hono/factory";
+import {z} from "zod";
+import {getDatabase} from "../../libs/drizzle/get-database";
+import {createPostgresqlTaskRepository} from "../../infrastructure/repository/postgresql-task-repository";
+import {FindTaskUseCase} from "../../application/use-case/find-task-use-case";
 
 type Env = {
   Variables: {
-    taskQueryService: TaskQueryServiceInterface;
+    findTaskUseCase: FindTaskUseCase;
   };
 };
 
@@ -25,15 +25,16 @@ getTaskController.get(
   }),
   createMiddleware<Env>(async (context, next) => {
     const database = getDatabase();
-    const taskQueryService = new PostgresqlTaskQueryService(database);
-    context.set("taskQueryService", taskQueryService);
+    const repository = createPostgresqlTaskRepository(database);
+    const findTaskUseCase = new FindTaskUseCase(repository);
+    context.set("findTaskUseCase", findTaskUseCase);
 
     await next();
   }),
   async (context) => {
     const param = context.req.valid("param");
 
-    const payload = await context.var.taskQueryService.invoke(param);
+    const payload = await context.var.findTaskUseCase.invoke(param);
     if (!payload) {
       return context.text("task not found", 404);
     }

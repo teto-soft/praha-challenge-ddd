@@ -1,6 +1,7 @@
-import { type Result, err, ok } from "neverthrow";
-import { Task } from "../../domain/task/task";
-import type { TaskRepositoryInterface } from "../../domain/task/task-repository";
+import {err, ok, type Result} from "neverthrow";
+import {Task} from "../../domain/task/task";
+import type {TaskRepositoryInterface} from "../../domain/task/task-repository";
+import {createId} from "../../domain/value-objects/id";
 
 export type EditTaskTitleUseCaseInput = {
   taskId: string;
@@ -33,7 +34,12 @@ export class EditTaskTitleUseCase {
       EditTaskTitleUseCaseNotFoundError
     >
   > {
-    const foundTaskResult = await this.taskRepository.findById(input.taskId);
+    const taskId = createId(input.taskId);
+    if (taskId.isErr()) {
+      return err(new EditTaskTitleUseCaseNotFoundError(taskId.error.message));
+    }
+
+    const foundTaskResult = await this.taskRepository.findById(taskId.value);
     if (foundTaskResult.isErr()) {
       return err(
         new EditTaskTitleUseCaseNotFoundError(foundTaskResult.error.message),

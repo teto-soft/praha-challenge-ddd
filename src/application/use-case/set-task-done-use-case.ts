@@ -1,7 +1,9 @@
-import { type Result, err } from "neverthrow";
-import { Task } from "../../domain/task/task";
-import type { TaskRepositoryInterface } from "../../domain/task/task-repository";
-import { createIsDone } from "../../domain/value-objects/isDone";
+import {err, type Result} from "neverthrow";
+import {Task} from "../../domain/task/task";
+import type {TaskRepositoryInterface} from "../../domain/task/task-repository";
+import {createIsDone} from "../../domain/value-objects/isDone";
+import {createId} from "../../domain/value-objects/id";
+import {EditTaskTitleUseCaseNotFoundError} from "./edit-task-title-use-case";
 
 export type SetTaskDoneUseCaseInput = {
   taskId: string;
@@ -30,7 +32,12 @@ export class SetTaskDoneUseCase {
   ): Promise<
     Result<SetTaskDoneUseCasePayload, SetTaskDoneUseCaseNotFoundError>
   > {
-    const foundTaskResult = await this.taskRepository.findById(input.taskId);
+    const taskId = createId(input.taskId);
+    if (taskId.isErr()) {
+      return err(new EditTaskTitleUseCaseNotFoundError(taskId.error.message));
+    }
+
+    const foundTaskResult = await this.taskRepository.findById(taskId.value);
     if (foundTaskResult.isErr()) {
       return err(
         new SetTaskDoneUseCaseNotFoundError(foundTaskResult.error.message),

@@ -79,16 +79,19 @@ export const createPostgresqlTaskRepository = (
       });
   };
 
-  const createConditions = (task: Partial<ITask>): SQL[] =>
-    Object.entries(task)
+  const createConditions = (task?: Partial<ITask>): SQL[] => {
+    if (!task) return [];
+
+    return Object.entries(task)
       .filter((entry): entry is [keyof ITask, ITask[keyof ITask]] => {
         const [key, value] = entry;
         return value !== null && key in tasks;
       })
       .map(([key, value]) => eq(tasks[key], value));
+  };
 
   const findManyBy = async (
-    task: Partial<Omit<ITask, "id">>,
+    task?: Partial<Omit<ITask, "id">>,
   ): Promise<Result<ITask[], TaskRepositoryFindByIdError>> => {
     const conditions = createConditions(task);
 
@@ -110,9 +113,5 @@ export const createPostgresqlTaskRepository = (
       );
   };
 
-  return {
-    save,
-    findById,
-    findManyBy,
-  };
+  return { save, findById, findManyBy };
 };
