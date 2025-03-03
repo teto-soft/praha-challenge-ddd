@@ -35,7 +35,7 @@ export const createPostgresqlTaskRepository = (
       .returning({
         id: tasks.id,
         title: tasks.title,
-        isDone: tasks.isDone,
+        body: tasks.body,
       })
       .then((rows) => {
         const row = rows.at(0);

@@ -16,13 +16,17 @@ export const createTaskController = new Hono<Env>();
 
 createTaskController.post(
   "/tasks/new",
-  zValidator("json", z.object({ title: z.string() }), (result, c) => {
-    if (!result.success) {
-      return c.text("invalid title", 400);
-    }
+  zValidator(
+    "json",
+    z.object({ title: z.string(), body: z.string() }),
+    (result, c) => {
+      if (!result.success) {
+        return c.text("invalid title", 400);
+      }
 
-    return;
-  }),
+      return;
+    },
+  ),
   createMiddleware<Env>(async (context, next) => {
     const database = getDatabase();
     const taskRepository = createPostgresqlTaskRepository(database);

@@ -1,15 +1,16 @@
-import type { Result } from "neverthrow";
-import { Task, type TaskError } from "../../domain/task/task";
-import type { TaskRepositoryInterface } from "../../domain/task/task-repository";
+import type {Result} from "neverthrow";
+import {Task, type TaskError} from "../../domain/task/task";
+import type {TaskRepositoryInterface} from "../../domain/task/task-repository";
 
-export type CreateTaskUseCaseInput = {
+type CreateTaskUseCaseInput = {
   title: string;
+  body: string;
 };
 
-export type CreateTaskUseCasePayload = {
+type CreateTaskUseCasePayload = {
   id: string;
   title: string;
-  isDone: boolean;
+  body: string;
 };
 
 export class CreateTaskUseCase {
@@ -22,7 +23,7 @@ export class CreateTaskUseCase {
   ): Promise<Result<CreateTaskUseCasePayload, TaskError>> {
     const taskResult = Task.create({
       title: input.title,
-      isDone: false,
+      body: input.body,
     });
 
     if (taskResult.isErr()) {

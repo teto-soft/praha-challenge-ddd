@@ -1,27 +1,23 @@
-import type { Result } from "neverthrow";
-import { type Id, type InvalidIdError, createId } from "../value-objects/id";
-import { type IsDone, createIsDone } from "../value-objects/isDone";
-import {
-  type InvalidTitleError,
-  type Title,
-  createTitle,
-} from "../value-objects/title";
+import type {Result} from "neverthrow";
+import {createId, type Id, type InvalidIdError} from "../value-objects/id";
+import {createTitle, type InvalidTitleError, type Title,} from "../value-objects/title";
+import {type Body, createBody} from "../value-objects/body";
 
 export type ITask = Readonly<{
   id: Id;
   title: Title;
-  isDone: IsDone;
+  body: Body;
 }>;
 
 type CreateTaskProps = Readonly<{
   title: string;
-  isDone: boolean;
+  body: string;
 }>;
 
 type ReconstructTaskProps = Readonly<{
   id: string;
   title: string;
-  isDone: boolean;
+  body: string;
 }>;
 
 export type TaskError = InvalidIdError | InvalidTitleError;
@@ -29,29 +25,24 @@ export type TaskError = InvalidIdError | InvalidTitleError;
 export const Task = {
   create: (props: CreateTaskProps): Result<ITask, TaskError> => {
     return createId().andThen((id) =>
-      createTitle(props.title).map((title) => ({
-        id,
-        title,
-        isDone: createIsDone(props.isDone),
-      })),
+      createTitle(props.title).andThen((title) =>
+        createBody(props.body).map((body) => ({
+          id,
+          title,
+          body,
+        })),
+      ),
     );
   },
   reconstruct: (props: ReconstructTaskProps): Result<ITask, TaskError> => {
     return createId(props.id).andThen((id) =>
-      createTitle(props.title).map((title) => ({
-        id,
-        title,
-        isDone: createIsDone(props.isDone),
-      })),
+      createTitle(props.title).andThen((title) =>
+        createBody(props.body).map((body) => ({
+          id,
+          title,
+          body,
+        })),
+      ),
     );
   },
-  toggleDone: (task: ITask): ITask => ({
-    ...task,
-    isDone: createIsDone(!task.isDone),
-  }),
-  updateTitle: (task: ITask, newTitle: string): Result<ITask, TaskError> =>
-    createTitle(newTitle).map((title) => ({
-      ...task,
-      title,
-    })),
 };
