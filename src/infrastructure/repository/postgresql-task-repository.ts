@@ -18,40 +18,25 @@ export const createPostgresqlTaskRepository = (
     return database
       .insert(tasks)
       .values(task)
-      .onConflictDoUpdate(
-        (() => {
-          const { id, ...rest } = tasks;
-          return {
-            target: tasks.id,
-            set: Object.fromEntries(
-              Object.entries(rest).map(([key]) => [
-                key,
-                sql.raw(`excluded.${key}`),
-              ]),
-            ),
-          };
-        })(),
-      )
-      .returning({
-        id: tasks.id,
-        title: tasks.title,
-        body: tasks.body,
-      })
+      .onConflictDoUpdate(createSaveOnConflictDoUpdateParams())
+      .returning({ id: tasks.id, title: tasks.title, body: tasks.body })
       .then((rows) => {
         const row = rows.at(0);
         if (!row) {
           return err(new TaskRepositorySaveError("Failed to save a task"));
         }
+
         return Task.reconstruct(row).mapErr(
           (error) => new TaskRepositorySaveError(error.message),
         );
       })
-      .catch((error) => {
-        if (error instanceof Error) {
-          return err(new TaskRepositorySaveError(error.message));
-        }
-        return err(new TaskRepositorySaveError("Unknown error"));
-      });
+      .catch((error) =>
+        err(
+          new TaskRepositoryFindByIdError(
+            error instanceof Error ? error.message : "Unknown error",
+          ),
+        ),
+      );
   };
 
   const findById = async (
@@ -71,23 +56,13 @@ export const createPostgresqlTaskRepository = (
           (error) => new TaskRepositoryFindByIdError(error.message),
         );
       })
-      .catch((error) => {
-        if (error instanceof Error) {
-          return err(new TaskRepositoryFindByIdError(error.message));
-        }
-        return err(new TaskRepositoryFindByIdError("Unknown error"));
-      });
-  };
-
-  const createConditions = (task?: Partial<ITask>): SQL[] => {
-    if (!task) return [];
-
-    return Object.entries(task)
-      .filter((entry): entry is [keyof ITask, ITask[keyof ITask]] => {
-        const [key, value] = entry;
-        return value !== null && key in tasks;
-      })
-      .map(([key, value]) => eq(tasks[key], value));
+      .catch((error) =>
+        err(
+          new TaskRepositoryFindByIdError(
+            error instanceof Error ? error.message : "Unknown error",
+          ),
+        ),
+      );
   };
 
   const findManyBy = async (
@@ -114,4 +89,24 @@ export const createPostgresqlTaskRepository = (
   };
 
   return { save, findById, findManyBy };
+};
+
+const createConditions = (task?: Partial<ITask>): SQL[] => {
+  if (!task) return [];
+
+  return Object.entries(task)
+    .filter((entry): entry is [keyof ITask, ITask[keyof ITask]] => {
+      const [key, value] = entry;
+      return value !== null && key in tasks;
+    })
+    .map(([key, value]) => eq(tasks[key], value));
+};
+
+const createSaveOnConflictDoUpdateParams = () => {
+  const { id, ...rest } = tasks;
+  const set = Object.fromEntries(
+    Object.entries(rest).map(([key]) => [key, sql.raw(`excluded.${key}`)]),
+  );
+
+  return { target: id, set };
 };
