@@ -1,6 +1,6 @@
 import type {Result} from "neverthrow";
-import {createId, type Id, type InvalidIdError} from "../value-objects/id";
-import {createTeamName, type InvalidTeamNameError, type TeamName} from "../value-objects/teamName";
+import {createId, type Id, type InvalidIdError} from "../../value-objects/id";
+import {createTeamName, type InvalidTeamNameError, type TeamName,} from "../../value-objects/team/teamName";
 
 export type ITeam = Readonly<{
   id: Id;

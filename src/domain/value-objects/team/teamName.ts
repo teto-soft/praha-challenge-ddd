@@ -20,8 +20,8 @@ export function createTeamName(
     : err(new InvalidTeamNameError(teamName));
 }
 
-// 英数字と日本語（ひらがな、カタカナ、漢字）のみを許可する正規表現
-const validCharsRegex = /^[a-zA-Z0-9ぁ-んァ-ヶー一-龠々]+$/;
+// 英文字のみを許可する正規表現
+const validCharsRegex = /^[a-zA-Z]+$/;
 
 const teamNameSchema = z
   .string()
@@ -29,6 +29,6 @@ const teamNameSchema = z
   .max(100, "TeamName must be less than 100 characters")
   .refine(
     (value) => validCharsRegex.test(value),
-    "チーム名には英数字と日本語（ひらがな、カタカナ、漢字）のみ使用できます",
+    "チーム名には英文字のみ使用できます",
   )
   .transform((value): TeamName => value as TeamName);

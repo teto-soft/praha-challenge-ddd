@@ -1,6 +1,6 @@
 import type {Result} from "neverthrow";
-import {Task, type TaskError} from "../../domain/task/task";
-import type {TaskRepositoryInterface} from "../../domain/task/task-repository";
+import {Task, type TaskError} from "../../domain/entities/task/task";
+import type {TaskRepositoryInterface} from "../../domain/entities/task/task-repository";
 
 type CreateTaskUseCaseInput = {
   title: string;

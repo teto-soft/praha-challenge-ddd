@@ -1,7 +1,7 @@
 import type {Result} from "neverthrow";
-import {createId, type Id, type InvalidIdError} from "../value-objects/id";
-import {createTitle, type InvalidTitleError, type Title,} from "../value-objects/title";
-import {type Body, createBody} from "../value-objects/body";
+import {createId, type Id, type InvalidIdError} from "../../value-objects/id";
+import {createTitle, type InvalidTitleError, type Title,} from "../../value-objects/title";
+import {type Body, createBody} from "../../value-objects/body";
 
 export type ITask = Readonly<{
   id: Id;

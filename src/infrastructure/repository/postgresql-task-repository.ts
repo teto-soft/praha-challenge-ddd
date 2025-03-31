@@ -1,11 +1,11 @@
 import {and, eq, type SQL, sql} from "drizzle-orm";
 import {err, Result} from "neverthrow";
-import {type ITask, Task} from "../../domain/task/task";
+import {type ITask, Task} from "../../domain/entities/task/task";
 import {
   TaskRepositoryFindByIdError,
   type TaskRepositoryInterface,
   TaskRepositorySaveError,
-} from "../../domain/task/task-repository";
+} from "../../domain/entities/task/task-repository";
 import type {Database} from "../../libs/drizzle/get-database";
 import {tasks} from "../../libs/drizzle/schema";
 

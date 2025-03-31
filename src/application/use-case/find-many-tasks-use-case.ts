@@ -1,5 +1,5 @@
 import {err, type Result} from "neverthrow";
-import type {TaskRepositoryInterface} from "../../domain/task/task-repository";
+import type {TaskRepositoryInterface} from "../../domain/entities/task/task-repository";
 
 type FindManyTasksUseCasePayload = {
   id: string;
