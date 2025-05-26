@@ -3,6 +3,7 @@ import {err, Result} from "neverthrow";
 import {type ITask, Task} from "../../domain/entities/task/task";
 import {
   TaskRepositoryFindByIdError,
+  TaskRepositoryFindManyByError,
   type TaskRepositoryInterface,
   TaskRepositorySaveError,
 } from "../../domain/entities/task/task-repository";
@@ -32,7 +33,7 @@ export const createPostgresqlTaskRepository = (
       })
       .catch((error) =>
         err(
-          new TaskRepositoryFindByIdError(
+          new TaskRepositorySaveError(
             error instanceof Error ? error.message : "Unknown error",
           ),
         ),
@@ -67,7 +68,7 @@ export const createPostgresqlTaskRepository = (
 
   const findManyBy = async (
     task?: Partial<Omit<ITask, "id">>,
-  ): Promise<Result<ITask[], TaskRepositoryFindByIdError>> => {
+  ): Promise<Result<ITask[], TaskRepositoryFindManyByError>> => {
     const conditions = createConditions(task);
 
     return database
@@ -77,11 +78,11 @@ export const createPostgresqlTaskRepository = (
       .then((rows) => rows.map(Task.reconstruct))
       .then((tasks) => Result.combine(tasks))
       .then((tasks) =>
-        tasks.mapErr((error) => new TaskRepositoryFindByIdError(error.message)),
+        tasks.mapErr((error) => new TaskRepositoryFindManyByError(error.message)),
       )
       .catch((error) =>
         err(
-          new TaskRepositoryFindByIdError(
+          new TaskRepositoryFindManyByError(
             error instanceof Error ? error.message : "Unknown error",
           ),
         ),
