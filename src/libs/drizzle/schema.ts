@@ -13,7 +13,6 @@ export const teams = pgTable("teams", {
 
 export const participants = pgTable("participants", {
   id: varchar("id").primaryKey(),
-  teamId: varchar("team_id").notNull(),
   name: varchar("name").notNull(),
   email: varchar("email").notNull(),
   enrollmentStatus: varchar("enrollment_status").notNull(),
