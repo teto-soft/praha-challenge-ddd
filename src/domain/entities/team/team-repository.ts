@@ -3,6 +3,7 @@ import type {ITeam} from "./team";
 
 export type TeamRepositoryInterface = {
   list: () => Promise<Result<ITeam[], TeamRepositoryListError>>;
+  update: (id: ITeam["id"], team: Partial<Omit<ITeam, "id">>) => Promise<Result<ITeam, TeamRepositoryError>>;
 };
 
 export class TeamRepositoryError extends Error {
@@ -16,5 +17,12 @@ export class TeamRepositoryListError extends TeamRepositoryError {
   constructor(message: string) {
     super(message);
     this.name = "TeamRepositoryListError";
+  }
+}
+
+export class TeamRepositoryUpdateError extends TeamRepositoryError {
+  constructor(message: string) {
+    super(message);
+    this.name = "TeamRepositoryUpdateError";
   }
 }
