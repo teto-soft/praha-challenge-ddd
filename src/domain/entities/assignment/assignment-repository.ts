@@ -14,7 +14,7 @@ export type AssignmentRepositoryInterface = {
   ): Promise<Result<IAssignment, AssignmentRepositoryUpdateError>>;
 };
 
-export class AssignmentRepositoryError extends Error {
+class AssignmentRepositoryError extends Error {
   constructor(message: string) {
     super(message);
     this.name = "AssignmentRepositoryError";
