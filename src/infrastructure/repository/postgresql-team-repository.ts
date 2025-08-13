@@ -16,9 +16,15 @@ export const createPostgresqlTeamRepository = (
     return database
       .select()
       .from(teams)
-      .then((rows) => Result.combine(rows.map(Team.reconstruct)))
-      .then((teams) =>
-        teams.mapErr((error) => new TeamRepositoryListError(error.message)),
+      .then((rows) => 
+        Result.combine(
+          rows.map(row => 
+            Team.reconstruct({
+              ...row,
+              participants: [] // TODO: Load participants from participants table if needed
+            })
+          )
+        ).mapErr((error) => new TeamRepositoryListError(error.message))
       )
       .catch((error) =>
         err(
@@ -43,11 +49,13 @@ export const createPostgresqlTeamRepository = (
         if (!row) {
           return err(new TeamRepositoryUpdateError("Team not found"));
         }
-        return Team.reconstruct(row)
+        return Team.reconstruct({
+          ...row,
+          participants: [] // TODO: Load participants from participants table if needed
+        }).mapErr(
+          (error) => new TeamRepositoryUpdateError(error.message)
+        );
       })
-      .then((teams) =>
-        teams.mapErr((error) => new TeamRepositoryUpdateError(error.message)),
-      )
       .catch((error) =>
         err(
           new TeamRepositoryUpdateError(
