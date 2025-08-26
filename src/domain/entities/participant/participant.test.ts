@@ -11,7 +11,7 @@ describe("Participant", () => {
   const validId = ulid();
   const validName = "John Doe";
   const validEmail = "john.doe@example.com";
-  const validEnrollmentStatus = "ENROLLED";
+  const validEnrollmentStatus = "在籍中";
 
   beforeEach(() => {
     vi.restoreAllMocks();
