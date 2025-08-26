@@ -73,7 +73,7 @@ export const createPostgresqlTeamRepository = (
       if (team.participants) {
         await database.delete(participants).where(eq(participants.teamId, id));
 
-        const participantsData = team.participants.toPersistenceData();
+        const participantsData = team.participants.forPersistence();
         if (participantsData.length > 0) {
           await database.insert(participants).values(
             participantsData.map((p) => ({
