@@ -87,9 +87,13 @@ describe("Team", () => {
       vi.spyOn(idModule, "createId").mockReturnValue(ok(validId));
       vi.spyOn(nameModule, "createName").mockReturnValue(ok(validName));
 
+      const singleParticipant = validParticipants[0]
+        ? [validParticipants[0]]
+        : [];
+
       const result = Team.create({
         name: "チームA",
-        participants: validParticipants,
+        participants: singleParticipant,
       });
 
       expect(result.isErr()).toBe(true);
