@@ -16,6 +16,7 @@ export const participants = pgTable("participants", {
   name: varchar("name").notNull(),
   email: varchar("email").notNull(),
   enrollmentStatus: varchar("enrollment_status").notNull(),
+  teamId: varchar("team_id"),
 });
 
 export const assignments = pgTable(
