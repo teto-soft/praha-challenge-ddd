@@ -1,8 +1,7 @@
 import {Result} from "neverthrow";
 import {createId, type Id} from "../../value-objects/id";
 import {createName, type Name} from "../../value-objects/name";
-import {type IParticipant, Participant} from "../participant/participant";
-import type {StripAllBrands} from "../../value-objects/types/type";
+import {Participant} from "../participant/participant";
 import type {TeamError} from "./team-error";
 import {TeamParticipants} from "./team-participants";
 
@@ -12,7 +11,12 @@ export type ITeam = Readonly<{
   participants: TeamParticipants;
 }>;
 
-type PlainParticipant = StripAllBrands<IParticipant>;
+type PlainParticipant = {
+  readonly id: string;
+  readonly name: string;
+  readonly email: string;
+  readonly enrollmentStatus: string;
+};
 
 type CreateTeamProps = Readonly<{
   name: string;
