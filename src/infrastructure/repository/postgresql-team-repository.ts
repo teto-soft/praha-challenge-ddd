@@ -73,14 +73,11 @@ export const createPostgresqlTeamRepository = (
       if (team.participants) {
         await database.delete(participants).where(eq(participants.teamId, id));
 
-        const participantsArray = team.participants.toArray();
-        if (participantsArray.length > 0) {
+        const participantsData = team.participants.toPersistenceData();
+        if (participantsData.length > 0) {
           await database.insert(participants).values(
-            participantsArray.map((p) => ({
-              id: p.id,
-              name: p.name,
-              email: p.email,
-              enrollmentStatus: p.enrollmentStatus,
+            participantsData.map((p) => ({
+              ...p,
               teamId: id,
             })),
           );
