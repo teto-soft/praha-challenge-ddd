@@ -1,14 +1,15 @@
-import {err, ok, Result} from "neverthrow";
+import {Result} from "neverthrow";
 import {createId, type Id} from "../../value-objects/id";
 import {createName, type Name} from "../../value-objects/name";
 import {type IParticipant, Participant} from "../participant/participant";
 import type {StripAllBrands} from "../../value-objects/types/type";
-import {type TeamError, TeamValidationError} from "./team-error";
+import type {TeamError} from "./team-error";
+import {TeamParticipants} from "./team-participants";
 
 export type ITeam = Readonly<{
   id: Id;
   name: Name;
-  participants: IParticipant[];
+  participants: TeamParticipants;
 }>;
 
 type PlainParticipant = StripAllBrands<IParticipant>;
@@ -28,57 +29,37 @@ export const Team = {
   create: (props: CreateTeamProps): Result<ITeam, TeamError> => {
     return createId().andThen((id) =>
       createName(props.name).andThen((name) => {
-        const validatedParticipants = validateParticipants(props.participants);
-        if (validatedParticipants.isErr()) {
-          return err(validatedParticipants.error);
-        }
-
         const participantResults = Result.combine(
-          validatedParticipants.value.map(Participant.create),
+          props.participants.map(Participant.create),
         );
 
-        return participantResults.map((participants) => ({
-          id,
-          name,
-          participants,
-        }));
+        return participantResults.andThen((createdParticipants) =>
+          TeamParticipants.create(createdParticipants).map((participants) => ({
+            id,
+            name,
+            participants,
+          })),
+        );
       }),
     );
   },
   reconstruct: (props: ReconstructTeamProps): Result<ITeam, TeamError> => {
     return createId(props.id).andThen((id) =>
       createName(props.name).andThen((name) => {
-        const validatedParticipants = validateParticipants(props.participants);
-        if (validatedParticipants.isErr()) {
-          return err(validatedParticipants.error);
-        }
-
         const participantResults = Result.combine(
-          validatedParticipants.value.map(Participant.reconstruct),
+          props.participants.map(Participant.reconstruct),
         );
 
-        return participantResults.map((participants) => ({
-          id,
-          name,
-          participants,
-        }));
+        return participantResults.andThen((reconstructedParticipants) =>
+          TeamParticipants.reconstruct(reconstructedParticipants).map(
+            (participants) => ({
+              id,
+              name,
+              participants,
+            }),
+          ),
+        );
       }),
     );
   },
-};
-
-const validateParticipants = <
-  T extends PlainParticipant | Omit<PlainParticipant, "id">,
->(
-  participants: T[],
-): Result<T[], TeamValidationError> => {
-  const length = participants.length;
-  if (length < 2 || length > 4) {
-    return err(
-      new TeamValidationError(
-        `チームの参加者は2人以上4人以下でなければなりません。 現在の参加者数: ${length}`,
-      ),
-    );
-  }
-  return ok(participants);
 };
